@@ -13,7 +13,9 @@ class App extends React.Component {
     this.state = {
       movies: [],
       moviesWillWatch: [],
-      sort_by: "popularity.desc"
+      sort_by: "popularity.desc",
+      page: 1,
+      total_pages: 0
     };
   }
 
@@ -34,13 +36,17 @@ class App extends React.Component {
   }
 
   getMovies = () => {
-    fetch(`${API_URL}/discover/movie?api_key=${API_KEY_3}&sort_by=${this.state.sort_by}`)
+    fetch(
+      `${API_URL}/discover/movie?api_key=${API_KEY_3}&sort_by=${this.state.sort_by}&page=${this.state.page}`
+    )
       .then(response => {
         return response.json();
       })
       .then(data => {
+        console.log("get data from movieDB", data);
         this.setState({
-          movies: data.results
+          movies: data.results,
+          total_pages: data.total_pages
         });
       });
   };
@@ -55,9 +61,7 @@ class App extends React.Component {
     });
   };
 
-  addMovieToWillWatch = movie => {
-    // const updateMoviesWillWatch = [...this.state.moviesWillWatch];
-    // updateMoviesWillWatch.push(movie);
+  addMovieToWillWatch = movie => {    
 
     const updateMoviesWillWatch = [...this.state.moviesWillWatch, movie];
 
@@ -67,8 +71,7 @@ class App extends React.Component {
   };
 
   removeMovieFromWillWatch = movie => {
-    //console.log(movie);
-
+    
     const updateMoviesWillWatch = this.state.moviesWillWatch.filter(item => {
       return item.id !== movie.id;
     });
@@ -78,6 +81,19 @@ class App extends React.Component {
     });
   };
 
+  updatePage = value => {
+    this.setState({
+      page: this.state.page + value
+    });
+  };
+
+  handleChangePage = value => {
+    return () => {
+      this.updatePage(value);
+      this.getMovies();
+    };
+  };  
+
   updateSortBy = value => {
     this.setState({
       sort_by: value
@@ -85,7 +101,7 @@ class App extends React.Component {
   };
 
   render() {
-    console.log("render", this.state, this);
+    console.log("App render", this.state, this);
     return (
       <div className="container">
         <div className="row">
@@ -93,6 +109,14 @@ class App extends React.Component {
             <div className="row mb-4 mt-2">
               <div className="col-12">
                 <MovieTabs sort_by={this.state.sort_by} updateSortBy={this.updateSortBy} />
+              </div>
+            </div>
+            <div className="row mb-4">
+              <div className="col-12">
+                <p>Current page: {this.state.page}</p>
+                <p>Total pages: {this.state.total_pages}</p>
+                <button onClick={this.handleChangePage(1)}>Next page</button>
+                <button onClick={this.handleChangePage(-1)}>Previous Page</button>
               </div>
             </div>
             <div className="row">
@@ -128,9 +152,5 @@ class App extends React.Component {
     );
   }
 }
-
-// function App() {
-//     return <div>{moviesData[0].title}</div>;
-// }
 
 export default App;

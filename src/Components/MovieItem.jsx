@@ -16,19 +16,13 @@ class MovieItem extends React.Component {
   //   };
 
   render() {
-    const {
-      movie,
-      removeMovie,
-      addMovieToWillWatch,
-      removeMovieFromWillWatch
-    } = this.props;
+    const { movie, removeMovie, addMovieToWillWatch, removeMovieFromWillWatch } = this.props;
 
     return (
       <div className="card">
         <img
           className="card-img-top"
-          src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path ||
-            movie.poster_path}`}
+          src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path || movie.poster_path}`}
           alt=""
         />
         <div className="card-body">
@@ -63,7 +57,13 @@ class MovieItem extends React.Component {
               </button>
             )}
           </div>
-          <button onClick={removeMovie.bind(null, movie)}>Delete movie</button>
+          <button
+            onClick={() => {
+              removeMovie(movie);
+            }}
+          >
+            Delete movie
+          </button>
         </div>
       </div>
     );
