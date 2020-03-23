@@ -15,7 +15,7 @@ class App extends React.Component {
       moviesWillWatch: [],
       sort_by: "popularity.desc",
       page: 1,
-      total_pages: 0
+      total_pages: 0      
     };
   }
 
@@ -29,7 +29,7 @@ class App extends React.Component {
     console.log("App didUpdate");
     // console.log("prev data", prevProps, prevState);
     // console.log("this", this.props, this.state);
-    if (prevState.sort_by !== this.state.sort_by) {
+    if (prevState.sort_by !== this.state.sort_by || prevState.page !== this.state.page) {
       console.log("App call API");
       this.getMovies();
     }
@@ -61,8 +61,7 @@ class App extends React.Component {
     });
   };
 
-  addMovieToWillWatch = movie => {    
-
+  addMovieToWillWatch = movie => {
     const updateMoviesWillWatch = [...this.state.moviesWillWatch, movie];
 
     this.setState({
@@ -71,7 +70,6 @@ class App extends React.Component {
   };
 
   removeMovieFromWillWatch = movie => {
-    
     const updateMoviesWillWatch = this.state.moviesWillWatch.filter(item => {
       return item.id !== movie.id;
     });
@@ -90,9 +88,8 @@ class App extends React.Component {
   handleChangePage = value => {
     return () => {
       this.updatePage(value);
-      this.getMovies();
     };
-  };  
+  };
 
   updateSortBy = value => {
     this.setState({
@@ -115,11 +112,19 @@ class App extends React.Component {
               <div className="col-12">
                 <p>Current page: {this.state.page}</p>
                 <p>Total pages: {this.state.total_pages}</p>
-                <button onClick={this.handleChangePage(1)}>Next page</button>
-                <button onClick={this.handleChangePage(-1)}>Previous Page</button>
+
+                <button onClick={this.handleChangePage(-1)} disabled={this.state.page === 1}>
+                  Previous Page
+                </button>
+                <button
+                  onClick={this.handleChangePage(1)}
+                  disabled={this.state.page === this.state.total_pages}
+                >
+                  Next page
+                </button>
               </div>
             </div>
-            <div className="row">
+            <div className="row ">
               {this.state.movies.map(movie => {
                 return (
                   <div className="col-6 mb-4" key={movie.id}>
@@ -134,7 +139,7 @@ class App extends React.Component {
               })}
             </div>
           </div>
-          <div className="col-3">
+          <div className="col-3 mt-3">
             <p>Will Watch: {this.state.moviesWillWatch.length} movies</p>
             <ul className="list-group">
               {this.state.moviesWillWatch.map(movie => (
